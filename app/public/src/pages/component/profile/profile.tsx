@@ -43,6 +43,31 @@ export default function Profile() {
     dispatch(setSearchedUser(undefined))
     dispatch(setSuggestions([]))
   }, [dispatch])
+  const record_history_num = profile?.history.length;
+
+  const [seed, setSeed] = useState(1);
+  const refreshHistory = useCallback(async () => {
+    let updated = false;
+    const checkInterval = 100; // Check every 100ms
+    const maxWaitTime = 3000; // Maximum wait time of 3 seconds
+    let elapsedTime = 0;
+
+    while (elapsedTime < maxWaitTime) {
+      await new Promise((resolve) => setTimeout(resolve, checkInterval));
+      elapsedTime += checkInterval;
+
+      if (profile?.history.length !== record_history_num) {
+        console.log("real history length updated!")
+        updated = true;
+        break;
+      }
+    }
+
+    if (updated) {
+      setSeed(Math.random());
+    }
+  }, [record_history_num, profile?.history.length, seed]);
+
 
   return (
     <div className="profile-modal">
@@ -63,7 +88,7 @@ export default function Profile() {
         )}
       </div>
 
-      {profile && <History history={profile.history.map(r=>r)} />}
+      {profile && <History history={profile.history.map(r=>r)} refreshHistory={refreshHistory} key={seed}/>}
     </div>
   )
 }
