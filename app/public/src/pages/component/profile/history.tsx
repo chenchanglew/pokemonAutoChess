@@ -1,4 +1,5 @@
-import React from "react"
+import React, { useState } from "react"
+import { useDispatch } from "react-redux"
 import { useTranslation } from "react-i18next"
 import {
   IGameRecord,
@@ -13,9 +14,27 @@ import Team from "../after/team"
 import SynergyIcon from "../icons/synergy-icon"
 import { EloBadge } from "./elo-badge"
 import "./history.css"
+import {loadMoreHistory} from "../../../stores/NetworkStore"
 
 export default function History(props: { history: IGameRecord[] }) {
   const { t } = useTranslation()
+
+  const dispatch = useDispatch()
+  // const [history, setHistory] = useState(props.history);
+  const loadMore = async () => {
+    console.log("Try to load more history from db");
+    try {
+      const skip = props.history.length;
+      const limit = 2;
+
+      // Send a message to the server to request more history
+      dispatch(loadMoreHistory({skip: skip, limit: limit}))
+
+    } catch (error) {
+      console.error("Failed to load more history:", error);
+    }
+  };
+
   return (
     <article className="game-history-list">
       <h2>{t("game_history")}</h2>
@@ -43,6 +62,12 @@ export default function History(props: { history: IGameRecord[] }) {
             </div>
           ))}
       </div>
+      <button
+          onClick={loadMore}
+          className="bubbly green create-room-button"
+      >
+        {t("load_more")}
+      </button>
     </article>
   )
 }

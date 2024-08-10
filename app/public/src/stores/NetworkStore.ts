@@ -285,6 +285,12 @@ export const networkSlice = createSlice({
     },
     setNetworkError: (state, action: PayloadAction<string | null>) => {
       state.error = action.payload
+    },
+    loadMoreHistory: (
+      state,
+      action: PayloadAction<{ skip: number; limit: number }>
+    ) => {
+      state.lobby?.send(Transfer.LOAD_MORE_HISTORY, action.payload)
     }
   }
 })
@@ -342,7 +348,8 @@ export const {
   kick,
   deleteRoom,
   createTournament,
-  setNetworkError
+  setNetworkError,
+  loadMoreHistory
 } = networkSlice.actions
 
 export default networkSlice.reducer

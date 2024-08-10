@@ -50,6 +50,7 @@ import {
   GiveBoostersCommand,
   GiveRoleCommand,
   GiveTitleCommand,
+  LoadMoreHistoryCommand,
   NextTournamentStageCommand,
   OnBotUploadCommand,
   OnCreateTournamentCommand,
@@ -217,6 +218,10 @@ export default class CustomLobbyRoom extends Room<LobbyState> {
 
     this.onMessage(Transfer.ADD_BOT_DATABASE, async (client, message) => {
       this.dispatcher.dispatch(new AddBotCommand(), { client, message })
+    })
+
+    this.onMessage(Transfer.LOAD_MORE_HISTORY, async (client, {skip, limit}: {skip:number, limit:number}) => {
+      this.dispatcher.dispatch(new LoadMoreHistoryCommand(), { client, skip, limit })
     })
 
     this.onMessage(
