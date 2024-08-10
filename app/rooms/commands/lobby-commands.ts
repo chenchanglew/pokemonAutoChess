@@ -84,7 +84,7 @@ export class OnJoinCommand extends Command<
         const stats = await DetailledStatistic.find(
           { playerId: client.auth.uid },
           ["pokemons", "time", "rank", "elo"],
-          { limit: 2, sort: { time: -1 } }
+          { limit: 10, sort: { time: -1 } }
         )
         if (stats) {
           const records = new ArraySchema<GameRecord>()
@@ -173,7 +173,6 @@ export class LoadMoreHistoryCommand extends Command<
   { client: Client; skip: number; limit: number }
 > {
   async execute({ client, skip, limit }: { client: Client; skip: number; limit: number }) {
-    console.log("receive load more history command");
     try {
       const stats = await DetailledStatistic.find(
         { playerId: client.auth.uid },
@@ -198,9 +197,6 @@ export class LoadMoreHistoryCommand extends Command<
         if (user) {
           user.history.push(...records);
         }
-        console.log("user.history length:", user?.history?.length)
-
-        // client.send(Transfer.HISTORY_UPDATE, records); // send updated history to the client
       }
     } catch (error) {
       logger.error(error);

@@ -24,7 +24,7 @@ export default function History(props: { history: IGameRecord[], refreshHistory:
   const loadMore = async () => {
     try {
       const skip = props.history.length;
-      const limit = 2;
+      const limit = 10;
 
       // Send a message to the server to request more history
       dispatch(loadMoreHistory({skip: skip, limit: limit}))
