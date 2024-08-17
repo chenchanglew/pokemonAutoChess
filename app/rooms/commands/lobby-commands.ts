@@ -170,36 +170,79 @@ export class OnJoinCommand extends Command<
 
 export class LoadMoreHistoryCommand extends Command<
   CustomLobbyRoom,
-  { client: Client; skip: number; limit: number }
+  { client: Client; searchedUid: string | undefined; skip: number; limit: number }
 > {
-  async execute({ client, skip, limit }: { client: Client; skip: number; limit: number }) {
+  async execute({ client, searchedUid, skip, limit }: { client: Client; searchedUid:string | undefined; skip: number; limit: number }) {
     try {
-      const stats = await DetailledStatistic.find(
-        { playerId: client.auth.uid },
-        ["pokemons", "time", "rank", "elo"],
-        { limit:limit, skip: skip, sort: { time: -1 } }
-      );
-
-      if (stats) {
-        const records = new ArraySchema<GameRecord>();
-        stats.forEach((record) => {
-          records.push(
-            new GameRecord(
-              record.time,
-              record.rank,
-              record.elo,
-              record.pokemons
-            )
-          );
-        });
-
-        const user = this.state.users.get(client.auth.uid);
+      // if searchedUid is defined return a new searched user, else update self user history.
+      if(searchedUid != undefined){
+        // console.log("load more history for searchedUid: ", searchedUid)
+        const user = await UserMetadata.findOne({ uid: searchedUid })
         if (user) {
-          user.history.push(...records);
+          const stats = await DetailledStatistic.find(
+            { playerId: user.uid },
+            ["pokemons", "time", "rank", "elo"],
+            { limit: skip+limit, sort: { time: -1 } }
+          )
+          if (stats) {
+            client.send(
+              Transfer.USER,
+              new LobbyUser(
+                user.uid,
+                user.displayName,
+                user.elo,
+                user.avatar,
+                user.wins,
+                user.exp,
+                user.level,
+                user.donor,
+                stats.map((r) => {
+                  return new GameRecord(r.time, r.rank, r.elo, r.pokemons)
+                }),
+                user.honors,
+                user.pokemonCollection,
+                user.booster,
+                user.titles,
+                user.title,
+                user.role,
+                false,
+                client.auth.metadata.creationTime,
+                client.auth.metadata.lastSignInTime,
+                user.language
+              )
+            )
+          }
+        }
+      }
+      else {
+        // console.log("load more history for self profile: ", client.auth.uid);
+        const stats = await DetailledStatistic.find(
+          { playerId: client.auth.uid },
+          ["pokemons", "time", "rank", "elo"],
+          { limit: limit, skip: skip, sort: { time: -1 } }
+        )
+        if (stats) {
+          const records = new ArraySchema<GameRecord>()
+          stats.forEach((record) => {
+            records.push(
+              new GameRecord(
+                record.time,
+                record.rank,
+                record.elo,
+                record.pokemons
+              )
+            )
+          })
+
+          const user = this.state.users.get(client.auth.uid)
+
+          if (user) {
+            user.history.push(...records)
+          }
         }
       }
     } catch (error) {
-      logger.error(error);
+      logger.error(error)
     }
   }
 }

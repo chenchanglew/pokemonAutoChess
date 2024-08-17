@@ -220,8 +220,8 @@ export default class CustomLobbyRoom extends Room<LobbyState> {
       this.dispatcher.dispatch(new AddBotCommand(), { client, message })
     })
 
-    this.onMessage(Transfer.LOAD_MORE_HISTORY, async (client, {skip, limit}: {skip:number, limit:number}) => {
-      this.dispatcher.dispatch(new LoadMoreHistoryCommand(), { client, skip, limit })
+    this.onMessage(Transfer.LOAD_MORE_HISTORY, async (client, {searchedUid, skip, limit}: {searchedUid: string | undefined, skip:number, limit:number}) => {
+      this.dispatcher.dispatch(new LoadMoreHistoryCommand(), { client, searchedUid, skip, limit })
     })
 
     this.onMessage(

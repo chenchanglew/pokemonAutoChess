@@ -16,23 +16,23 @@ import { EloBadge } from "./elo-badge"
 import "./history.css"
 import {loadMoreHistory} from "../../../stores/NetworkStore"
 
-export default function History(props: { history: IGameRecord[], refreshHistory: () => void }) {
+export default function History(props: { history: IGameRecord[], searchedUid: string | undefined, refreshHistory: () => void }) {
   const { t } = useTranslation()
 
   const dispatch = useDispatch()
-  // const [history, setHistory] = useState(props.history);
   const loadMore = async () => {
     try {
-      const skip = props.history.length;
-      const limit = 10;
+      const searchedUid = props.searchedUid
+      const skip = props.history.length
+      const limit = 10
 
       // Send a message to the server to request more history
-      dispatch(loadMoreHistory({skip: skip, limit: limit}))
+      dispatch(loadMoreHistory({searchedUid: searchedUid, skip: skip, limit: limit}))
 
     } catch (error) {
-      console.error("Failed to load more history:", error);
+      console.error("Failed to load more history:", error)
     }
-    props.refreshHistory();
+    props.refreshHistory()
   };
 
   return (

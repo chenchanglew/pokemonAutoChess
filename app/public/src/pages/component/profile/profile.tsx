@@ -28,7 +28,7 @@ export default function Profile() {
   const user = useAppSelector((state) => state.lobby.user)
   const suggestions = useAppSelector((state) => state.lobby.suggestions)
   const searchedUser = useAppSelector((state) => state.lobby.searchedUser)
-
+  const searchedUid = searchedUser?.id
   const profile = searchedUser ?? user
 
   function onSearchQueryChange(query: string) {
@@ -88,7 +88,7 @@ export default function Profile() {
         )}
       </div>
 
-      {profile && <History history={profile.history.map(r=>r)} refreshHistory={refreshHistory} key={seed}/>}
+      {profile && <History history={profile.history.map(r=>r)} searchedUid={searchedUid} refreshHistory={refreshHistory} key={seed}/>}
     </div>
   )
 }

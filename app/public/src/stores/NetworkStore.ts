@@ -288,7 +288,7 @@ export const networkSlice = createSlice({
     },
     loadMoreHistory: (
       state,
-      action: PayloadAction<{ skip: number; limit: number }>
+      action: PayloadAction<{ searchedUid: string | undefined; skip: number; limit: number }>
     ) => {
       state.lobby?.send(Transfer.LOAD_MORE_HISTORY, action.payload)
     }
