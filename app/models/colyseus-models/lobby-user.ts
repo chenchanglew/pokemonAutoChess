@@ -114,8 +114,4 @@ export default class LobbyUser extends Schema implements ILobbyUser {
       })
     }
   }
-
-  appendHistory(newRecords: GameRecord[]) {
-    this.history.push(...newRecords);
-  }
 }
